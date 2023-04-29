@@ -1,0 +1,10 @@
+az login
+./terraform.exe init
+./terraform.exe apply -auto-approve
+./setup_env.ps1
+
+
+./terraform import "azurerm_resource_group.main" "/subscriptions/cb0b9f42-6211-4cc5-87ae-d3657e20a771/resourceGroups/mfc-asb-demo"
+./terraform import "azurerm_servicebus_namespace.servicebus_namespace" "/subscriptions/cb0b9f42-6211-4cc5-87ae-d3657e20a771/resourceGroups/mfc-asb-demo/providers/Microsoft.ServiceBus/namespaces/mfc-asb-demo"
+./terraform import "azurerm_servicebus_topic.servicebus_topic" "/subscriptions/cb0b9f42-6211-4cc5-87ae-d3657e20a771/resourceGroups/mfc-asb-demo/providers/Microsoft.ServiceBus/namespaces/mfc-asb-demo/topics/test-topic"
+./terraform import "azurerm_servicebus_subscription.servicebus_subscription" "/subscriptions/cb0b9f42-6211-4cc5-87ae-d3657e20a771/resourceGroups/mfc-asb-demo/providers/Microsoft.ServiceBus/namespaces/mfc-asb-demo/topics/test-topic/subscriptions/test-topic-subscription"

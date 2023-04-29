@@ -1,0 +1,6 @@
+resource "azurerm_servicebus_subscription" "%SUBOBJECTNAME%" {
+  name                  = "%SUBNAME%"
+  topic_id              = azurerm_servicebus_topic.%TOPICNAME%.id
+  max_delivery_count    = %SUBMAXDEL% 
+  %SPECIAL%
+}

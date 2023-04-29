@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "path.csv",
+    "type": "java.lang.String",
+    "description": "A description for 'path.csv'"
+  },
+  {
+    "name": "path.provider",
+    "type": "java.lang.String",
+    "description": "A description for 'path.provider'"
+  },
+  {
+    "name": "path.queue",
+    "type": "java.lang.String",
+    "description": "A description for 'path.queue'"
+  },
+  {
+    "name": "path.topic",
+    "type": "java.lang.String",
+    "description": "A description for 'path.topic'"
+  },
+  {
+    "name": "path.subscription",
+    "type": "java.lang.String",
+    "description": "A description for 'path.subscription'"
+  },
+  {
+    "name": "path.namespace",
+    "type": "java.lang.String",
+    "description": "A description for 'path.namespace'"
+  }
+]}

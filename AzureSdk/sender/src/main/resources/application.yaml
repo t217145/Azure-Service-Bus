@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    azure:
+      servicebus:
+        namespace: ${asb.namespace.full}
+#        connection-string: ${asb.conn.str}
+        credential:
+          client-id: ${cred.client.id}
+          client-secret: ${cred.client.secret}
+        profile:
+          tenant-id: ${cred.tenantId}
+asb:
+  topic:
+    name: ${asb.topic}
+server:
+  port: 0

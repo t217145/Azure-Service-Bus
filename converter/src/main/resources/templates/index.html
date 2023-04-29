@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+		<form method="POST" enctype="multipart/form-data" action="/upload">
+			<table>
+				<tr>
+                    <th>CSV Exported from Confluence page</th>
+                    <td>
+                        <input type="file" name="exportCsv" />
+                    </td>
+                </tr>
+				<tr>
+                    <th>Environment</th>
+                    <td>
+                        <select id="env" name="env" required>
+                            <option disabled selected>Select Environment</option>
+                            <option value="dev">DEV</option>
+                            <option value="sit">SIT</option>
+                            <option value="uat">UAT</option>
+                            <option value="prd">PROD</option>
+                            <option value="uat-dr">UAT-RD</option>                            
+                            <option value="prd-dr">Prod-DR</option>
+                        </select>
+                    </td>
+                </tr>                
+				<tr>
+                    <td colspan="2">
+                        <input type="submit" value="Convert" />
+                    </td>
+                </tr>
+			</table>
+		</form>
+    </body>
+</html>

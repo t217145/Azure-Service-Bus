@@ -1,0 +1,20 @@
+data "azurerm_servicebus_namespace" "mfcsbushkagentprdeas01" {
+  name                = "mfcsbushkagentprdeas01"
+  resource_group_name = "EAS-HK-shared-Prod-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkclaimprdeas01" {
+  name                = "mfcsbushkclaimprdeas01"
+  resource_group_name = "EAS-HK-shared-Prod-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkcustoprdeas01" {
+  name                = "mfcsbushkcustoprdeas01"
+  resource_group_name = "EAS-HK-shared-Prod-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkpolprdeas01" {
+  name                = "mfcsbushkpolprdeas01"
+  resource_group_name = "EAS-HK-shared-Prod-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkshareprdeas01" {
+  name                = "mfcsbushkshareprdeas01"
+  resource_group_name = "EAS-HK-shared-Prod-01"
+}
