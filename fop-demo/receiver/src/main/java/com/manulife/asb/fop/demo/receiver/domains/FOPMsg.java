@@ -21,4 +21,6 @@ public class FOPMsg {
     private String msgId;
     private String ctxId;
     private String msg;
+    private String mode;
+    private String pId;
 }

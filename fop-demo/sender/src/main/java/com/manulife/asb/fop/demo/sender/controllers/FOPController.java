@@ -37,7 +37,7 @@ public class FOPController {
     
     @GetMapping({"", "/", "/index"})
     public String index(){
-        SendBatch();
+        sendBatch();
         return "success";
     }
 
@@ -45,7 +45,7 @@ public class FOPController {
     public String single(@RequestParam("type") String type, @RequestParam("msgId") String msgId){
         try{
             //Step-1 : prepare the TokenCredential
-            LOGGER.info("[Start::FOPController::SendBatch()::Step-1]");  
+            LOGGER.info("[Start::FOPController::single()::Step-1]");  
             TokenCredential credential = new ClientSecretCredentialBuilder()
                                             .clientId(clientId)
                                             .clientSecret(clientSecret)
@@ -53,7 +53,7 @@ public class FOPController {
                                             .build();
                                                 
             //Step-2 : prepare the ServiceBusSenderClient
-            LOGGER.info("[Start::FOPController::SendBatch()::Step-2]");  
+            LOGGER.info("[Start::FOPController::single()::Step-2]");  
 
             ServiceBusSenderClient client = new ServiceBusClientBuilder()
                                                 .credential(namespace, credential)
@@ -61,14 +61,14 @@ public class FOPController {
                                                 .topicName(topic)
                                                 .buildClient();
             
-            SendMsg(client, null, type, msgId);
+            sendMsg(client, null, type, msgId);
         } catch(Exception e){
             LOGGER.error("[Start::BatchSendController::single()::Error]", e);    
         }
         return "success";
     }
 
-    private void SendBatch(){
+    private void sendBatch(){
         try{
             //Step-1 : prepare the TokenCredential
             LOGGER.info("[Start::FOPController::SendBatch()::Step-1]");  
@@ -97,7 +97,7 @@ public class FOPController {
 
                 for (String type : batch) {
                     LOGGER.info("[Start::FOPController::SendBatch()::Step-3a]");
-                    SendMsg(client, ctx, type, String.format("m%d", ++i));
+                    sendMsg(client, ctx, type, String.format("m%d", ++i));
                 }
 
                 LOGGER.info("[Start::FOPController::SendBatch()::Step-4]");
@@ -114,7 +114,7 @@ public class FOPController {
         }
     }
 
-    private void SendMsg(ServiceBusSenderClient client, ServiceBusTransactionContext ctx, String type, String msgId){
+    private void sendMsg(ServiceBusSenderClient client, ServiceBusTransactionContext ctx, String type, String msgId){
         LOGGER.info("[Start::FOPController::SendMsg()::Step-3b]");
         ServiceBusMessage asbMsg = new ServiceBusMessage(BinaryData.fromBytes(String.format("I am a %s message", type).getBytes(UTF_8)));
         asbMsg.setMessageId(msgId);

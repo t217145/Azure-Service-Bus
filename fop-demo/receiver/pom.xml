@@ -70,6 +70,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<profiles>
+						<profile>n1</profile>
+						<profile>n2</profile>
+						<profile>n3</profile>
+						<profile>n4</profile>						
+					</profiles>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
