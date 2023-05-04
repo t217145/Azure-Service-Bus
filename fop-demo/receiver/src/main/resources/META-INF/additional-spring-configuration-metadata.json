@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "asb.topic.name",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.topic.name'"
+  },
+  {
+    "name": "asb.topic.subscription.name",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.topic.subscription.name'"
+  },
+  {
+    "name": "fop.processor.batchsize",
+    "type": "java.lang.String",
+    "description": "A description for 'fop.processor.batchsize'"
+  }
+]}
