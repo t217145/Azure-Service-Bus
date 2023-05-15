@@ -1,5 +1,6 @@
 package com.manulife.asb.testapps.domains;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,6 @@ public class ASBSenderModel {
     private String msg;
     private String sessionId;
 
-    private String customPropKey;
-    private String customPropValue;
+    private List<ASBPropertiesModel> properties;
+    private String subject;
 }
