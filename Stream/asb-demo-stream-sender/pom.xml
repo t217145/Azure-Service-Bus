@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.6</version>
+		<version>3.0.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.manulife.asb.demo</groupId>
 	<artifactId>stream.sender</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>Spring Cloud Stream Sender</name>
 	<description>Demo project for Spring Cloud Stream Sender using AAD authentication</description>
 	<properties>
