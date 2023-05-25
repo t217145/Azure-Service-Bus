@@ -119,7 +119,7 @@ public class TestController {
                 rtn = handleNonSessionReceive(cnt, credential, model);
             }
         } catch (Exception e) {
-            LOGGER.error("[Start::TestController::receive()::Error] : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::receive()::Error] : {}", e.getMessage());
         }
         return rtn;
     }
@@ -160,7 +160,7 @@ public class TestController {
             LOGGER.info("[Start::TestController::getMessageFromSessionQueue()::Step-3]");
             rtn = processSessionMessage(cnt, client);
         } catch (Exception e) {
-            LOGGER.error("[Start::TestController::getMessageFromQueue()::Error] : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::getMessageFromQueue()::Error] : {}", e.getMessage());
         }
         return rtn;
     }
@@ -190,7 +190,7 @@ public class TestController {
                         LOGGER.info("No more session to accept");
                         break;
                     } catch (Exception e){
-                        LOGGER.error("[Start::TestController::getMessageFromSessionQueue()::Error] : %s", e.getMessage());
+                        LOGGER.error("[Start::TestController::getMessageFromSessionQueue()::Error] : {}", e.getMessage());
                         break;
                     }
                 }while(true);
@@ -200,7 +200,7 @@ public class TestController {
                 rtn = processSessionMessage(cnt, sessionClient.acceptSession(model.getSessionId()));
             }
         } catch (Exception e) {
-            LOGGER.error("[Start::TestController::getMessageFromSessionQueue()::Error] : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::getMessageFromSessionQueue()::Error] : {}", e.getMessage());
         }
         return rtn;
     }
@@ -223,7 +223,7 @@ public class TestController {
             LOGGER.info("[Start::TestController::getMessageFromSubscription()::Step-2]");
             rtn = processSessionMessage(cnt, client);
         } catch (Exception e) {
-            LOGGER.error("[Start::TestController::getMessageFromSubscription()::Error] : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::getMessageFromSubscription()::Error] : {}", e.getMessage());
         }
         return rtn;
     }
@@ -283,6 +283,7 @@ public class TestController {
                     message.getContentType(),
                     message.getSubject(),
                     message.getMessageId(),
+                    message.getSessionId(),
                     message.getReplyTo(),
                     message.getReplyToSessionId(),
                     message.getTo(),
@@ -298,7 +299,7 @@ public class TestController {
             LOGGER.info("[Start::TestController::processSessionMessage()::Step-2]");
             client.close();
         } catch (Exception e) {
-            LOGGER.error("[Start::TestController::processSessionMessage()::Error] : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::processSessionMessage()::Error] : {}", e.getMessage());
         }
         return rtn;
     }    

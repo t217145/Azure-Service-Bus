@@ -16,6 +16,7 @@ public class ASBMsgModel {
     private String contentType;
     private String subject;
     private String messageId;
+    private String sessionId;
     private String replyTo;
     private String replyToSessionId;
     private String to;
