@@ -6,6 +6,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import com.azure.core.amqp.AmqpRetryOptions;
+import com.azure.core.amqp.exception.AmqpException;
 import com.azure.core.credential.TokenCredential;
 import com.azure.core.util.BinaryData;
 import com.azure.identity.ClientSecretCredentialBuilder;
@@ -15,8 +17,12 @@ import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.azure.messaging.servicebus.ServiceBusSessionReceiverClient;
 import com.manulife.asb.testapps.domains.ASBReceiverModel;
 import com.manulife.asb.testapps.domains.ASBSenderModel;
+import com.manulife.asb.testapps.domains.ASBMsgModel;
 import com.manulife.asb.testapps.domains.ASBPropertiesModel;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
 import com.azure.messaging.servicebus.ServiceBusReceiverClient;
 import com.azure.messaging.servicebus.models.ServiceBusReceiveMode;
@@ -93,8 +99,8 @@ public class TestController {
     }
 
     @PostMapping("/receive")
-    public String receive(ModelMap m, @RequestBody ASBReceiverModel model) {
-        String msg = "";
+    public List<ASBMsgModel> receive(ModelMap m, @RequestBody ASBReceiverModel model) {
+        List<ASBMsgModel> rtn = new ArrayList<>();
         try {
             // Step-1 : prepare the TokenCredential
             LOGGER.info("[Start::TestController::receive()::Step-1]");
@@ -106,23 +112,40 @@ public class TestController {
 
             // Step-2 : Triage the logic
             LOGGER.info("[Start::TestController::receive()::Step-2]");
-            if (model.getDest().getType().equals("subscription")) {
-                if (model.getSessionId() != null && !model.getSessionId().isEmpty()) {
-                    msg = getMessageFromSessionSubscription(credential, model);
-                } else {
-                    msg = getMessageFromSubscription(credential, model);
-                }
+            int cnt = (model.getCnt() > 0) ? model.getCnt() : 1;
+            if (model.isHasSession()) {
+                rtn = handleSessionReceive(cnt, credential, model);
             } else {
-                msg = getMessageFromQueue(credential, model);
+                rtn = handleNonSessionReceive(cnt, credential, model);
             }
         } catch (Exception e) {
-            msg = String.format("Error : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::receive()::Error] : %s", e.getMessage());
         }
-        return msg;
+        return rtn;
     }
 
-    private String getMessageFromQueue(TokenCredential credential, ASBReceiverModel model) {
-        String msg = "";
+    private List<ASBMsgModel> handleSessionReceive(int cnt, TokenCredential credential, ASBReceiverModel model){
+        List<ASBMsgModel> rtn = new ArrayList<>();
+        if (model.getDest().getType().equals("subscription")) {
+            rtn = getMessageFromSessionSubscription(cnt, credential, model);
+        } else {
+            rtn = getMessageFromSessionQueue(cnt, credential, model);
+        }
+        return rtn;
+    }
+
+    private List<ASBMsgModel> handleNonSessionReceive(int cnt, TokenCredential credential, ASBReceiverModel model){
+        List<ASBMsgModel> rtn = new ArrayList<>();
+        if (model.getDest().getType().equals("subscription")) {
+            rtn = getMessageFromSubscription(cnt, credential, model);
+        } else {
+            rtn = getMessageFromQueue(cnt, credential, model);
+        }
+        return rtn;
+    }
+
+    private List<ASBMsgModel> getMessageFromQueue(int cnt, TokenCredential credential, ASBReceiverModel model) {
+        List<ASBMsgModel> rtn = new ArrayList<>();
         try {
             // Step-1 : prepare the Service Bus Client
             LOGGER.info("[Start::TestController::getMessageFromQueue()::Step-1]");
@@ -134,23 +157,57 @@ public class TestController {
                     .buildClient();
 
             // Step-3 : Get the message
-            LOGGER.info("[Start::TestController::getMessageFromQueue()::Step-2]");
-            ServiceBusReceivedMessage message = client.peekMessage();
-            msg = new String(message.getBody().toBytes());
-            client.complete(message);
-            LOGGER.info("Received Message {}}", msg);
-
-            // Step-4 : stop the processor
-            LOGGER.info("[Start::TestController::getMessageFromQueue()::Step-3]");
-            client.close();
+            LOGGER.info("[Start::TestController::getMessageFromSessionQueue()::Step-3]");
+            rtn = processSessionMessage(cnt, client);
         } catch (Exception e) {
-            msg = String.format("Error : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::getMessageFromQueue()::Error] : %s", e.getMessage());
         }
-        return msg;
+        return rtn;
     }
 
-    private String getMessageFromSubscription(TokenCredential credential, ASBReceiverModel model) {
-        String msg = "";
+    private List<ASBMsgModel> getMessageFromSessionQueue(int cnt, TokenCredential credential, ASBReceiverModel model) {
+        List<ASBMsgModel> rtn = new ArrayList<>();
+        try {
+            // Step-1 : prepare the Service Bus Client
+            LOGGER.info("[Start::TestController::getMessageFromSessionQueue()::Step-1]");
+            ServiceBusSessionReceiverClient sessionClient = new ServiceBusClientBuilder()
+                    .credential(model.getDest().getNamespace(), credential)
+                    .retryOptions(new AmqpRetryOptions().setMaxRetries(1).setTryTimeout(Duration.ofSeconds(15)))
+                    .sessionReceiver()
+                    .queueName(model.getDest().getDestination())
+                    .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
+                    .buildClient();
+
+            // Step-2 : Triage whether session id is provided
+            LOGGER.info("[Start::TestController::getMessageFromSessionQueue()::Step-2]");
+            if(model.getSessionId() == null || model.getSessionId().isEmpty()){
+                do{
+                    try{
+                        // Step-3 : Get the message
+                        LOGGER.info("[Start::TestController::getMessageFromSessionQueue()::Step-3]");
+                        rtn.addAll(processSessionMessage(cnt, sessionClient.acceptNextSession()));                    
+                    }catch(AmqpException e){
+                        LOGGER.info("No more session to accept");
+                        break;
+                    } catch (Exception e){
+                        LOGGER.error("[Start::TestController::getMessageFromSessionQueue()::Error] : %s", e.getMessage());
+                        break;
+                    }
+                }while(true);
+            } else {
+                // Step-3 : Get the message
+                LOGGER.info("[Start::TestController::getMessageFromSessionQueue()::Step-3]");
+                rtn = processSessionMessage(cnt, sessionClient.acceptSession(model.getSessionId()));
+            }
+        } catch (Exception e) {
+            LOGGER.error("[Start::TestController::getMessageFromSessionQueue()::Error] : %s", e.getMessage());
+        }
+        return rtn;
+    }
+
+
+    private List<ASBMsgModel> getMessageFromSubscription(int cnt, TokenCredential credential, ASBReceiverModel model) {
+        List<ASBMsgModel> rtn = new ArrayList<>();
         try {
             // Step-1 : prepare the Service Bus Client
             LOGGER.info("[Start::TestController::GetMessageFromSubscription()::Step-1]");
@@ -163,27 +220,21 @@ public class TestController {
                     .buildClient();
 
             // Step-3 : Get the message
-            LOGGER.info("[Start::TestController::GetMessageFromSubscription()::Step-2]");
-            ServiceBusReceivedMessage message = client.peekMessage();
-            msg = new String(message.getBody().toBytes());
-            client.complete(message);
-            LOGGER.info("Received Message {}}", msg);
-
-            // Step-4 : stop the processor
-            LOGGER.info("[Start::TestController::GetMessageFromSubscription()::Step-3]");
-            client.close();
+            LOGGER.info("[Start::TestController::getMessageFromSubscription()::Step-2]");
+            rtn = processSessionMessage(cnt, client);
         } catch (Exception e) {
-            msg = String.format("Error : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::getMessageFromSubscription()::Error] : %s", e.getMessage());
         }
-        return msg;
+        return rtn;
     }
 
-    private String getMessageFromSessionSubscription(TokenCredential credential, ASBReceiverModel model) {
-        String msg = "";
+    private List<ASBMsgModel> getMessageFromSessionSubscription(int cnt, TokenCredential credential, ASBReceiverModel model){
+        List<ASBMsgModel> rtn = new ArrayList<>();
         try {
             // Step-1 : prepare the Service Bus Client
-            LOGGER.info("[Start::TestController::GetMessageFromSessionSubscription()::Step-1]");
+            LOGGER.info("[Start::TestController::getMessageFromSessionSubscription()::Step-1]");
             ServiceBusSessionReceiverClient sessionClient = new ServiceBusClientBuilder()
+                    .retryOptions(new AmqpRetryOptions().setMaxRetries(1).setTryTimeout(Duration.ofSeconds(15)))
                     .credential(model.getDest().getNamespace(), credential)
                     .sessionReceiver()
                     .topicName(model.getDest().getTopicName())
@@ -191,25 +242,64 @@ public class TestController {
                     .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
                     .buildClient();
 
-            // Step-2 : Set the session id
-            LOGGER.info("[Start::TestController::GetMessageFromSessionSubscription()::Step-2]");
-            sessionClient.acceptSession(model.getSessionId());
-
-            // Step-3 : Get the message
-            LOGGER.info("[Start::TestController::GetMessageFromSessionSubscription()::Step-3]");
-            ServiceBusReceiverClient client = sessionClient.acceptNextSession();
-            ServiceBusReceivedMessage message = client.peekMessage();
-            msg = new String(message.getBody().toBytes());
-            client.complete(message);
-            LOGGER.info("Received Message {}}", msg);
-
-            // Step-4 : stop the processor
-            LOGGER.info("[Start::TestController::GetMessageFromSessionSubscription()::Step-4]");
-            client.close();
-            sessionClient.close();
+            // Step-2 : Triage whether session id is provided
+            LOGGER.info("[Start::TestController::getMessageFromSessionSubscription()::Step-2]");
+            if(model.getSessionId() == null || model.getSessionId().isEmpty()){
+                do{
+                    try{
+                        // Step-3 : Get the message
+                        LOGGER.info("[Start::TestController::getMessageFromSessionSubscription()::Step-3]");
+                        rtn.addAll(processSessionMessage(cnt, sessionClient.acceptNextSession()));                    
+                    }catch(AmqpException e){
+                        LOGGER.info("No more session to accept");
+                        break;
+                    } catch (Exception e){
+                        LOGGER.error("[Start::TestController::getMessageFromSessionSubscription()::Error] : {}", e.getMessage());
+                        break;
+                    }
+                }while(true);
+            } else {
+                // Step-3 : Get the message
+                LOGGER.info("[Start::TestController::getMessageFromSessionSubscription()::Step-3]");
+                rtn = processSessionMessage(cnt, sessionClient.acceptSession(model.getSessionId()));
+            }
         } catch (Exception e) {
-            msg = String.format("Error : %s", e.getMessage());
+            LOGGER.error("[Start::TestController::getMessageFromSessionSubscription()::Error] : {}", e.getMessage());
         }
-        return msg;
+        return rtn;
     }
+
+    private List<ASBMsgModel> processSessionMessage(int cnt, ServiceBusReceiverClient client){
+        List<ASBMsgModel> rtn = new ArrayList<>();
+        try {
+            // Step-1 : Get the message
+            LOGGER.info("[Start::TestController::processSessionMessage()::Step-1]");
+            
+            for(ServiceBusReceivedMessage message : client.peekMessages(cnt)){
+                String msg = new String(message.getBody().toBytes());
+                ASBMsgModel rtnMsg =  new ASBMsgModel(
+                    new String(message.getBody().toBytes()),
+                    message.getCorrelationId(),
+                    message.getContentType(),
+                    message.getSubject(),
+                    message.getMessageId(),
+                    message.getReplyTo(),
+                    message.getReplyToSessionId(),
+                    message.getTo(),
+                    message.getApplicationProperties(),
+                    message.getDeliveryCount()
+                );
+                rtn.add(rtnMsg);
+                client.complete(message);
+                LOGGER.info("Received Message {}}", msg);
+            }
+
+            // Step-2 : stop the processor
+            LOGGER.info("[Start::TestController::processSessionMessage()::Step-2]");
+            client.close();
+        } catch (Exception e) {
+            LOGGER.error("[Start::TestController::processSessionMessage()::Error] : %s", e.getMessage());
+        }
+        return rtn;
+    }    
 }

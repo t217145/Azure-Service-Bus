@@ -14,5 +14,9 @@ public class ASBReceiverModel {
 
     private ASBDestinationModel dest;
 
+    private boolean hasSession;
+
     private String sessionId;
+
+    private int cnt;
 }
