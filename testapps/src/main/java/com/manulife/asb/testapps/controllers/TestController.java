@@ -291,7 +291,7 @@ public class TestController {
                     message.getDeliveryCount()
                 );
                 rtn.add(rtnMsg);
-                client.complete(message);
+                //client.complete(message);
                 LOGGER.info("Received Message {}}", msg);
             }
 
