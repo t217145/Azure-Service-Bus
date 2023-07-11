@@ -14,5 +14,5 @@ asb:
   subscription:
     name: session-subscription
 server:
-  port: 8081
+  port: 0
 fixedDelay: 60000
