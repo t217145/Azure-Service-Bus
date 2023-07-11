@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    azure:
+      servicebus:
+        namespace: mfc-asb-demo.servicebus.windows.net
+        credential:
+          client-id: 50afeca7-27a9-4700-9161-764bb99f493b
+          client-secret: Z418Q~vseljPzqujwRK7KuTIA4KahPqB24DozaEt
+        profile:
+          tenant-id: 02e6ef29-0dd2-4881-953e-2635b26dda38
+asb:
+  topic:
+    name: asb-demo-topic
+server:
+  port: 0
+app:
+    threadCnt: 10
+    clientPerThread: 10
+    msgCntPerThread: 5
+    enableSession: true

@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:h2:./asbdemo
+    driverClassName: org.h2.Driver
+    username: adm
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+  cloud:
+    azure:
+      servicebus:
+        namespace: mfc-asb-demo.servicebus.windows.net
+        credential:
+          client-id: 50afeca7-27a9-4700-9161-764bb99f493b
+          client-secret: Z418Q~vseljPzqujwRK7KuTIA4KahPqB24DozaEt
+        profile:
+          tenant-id: 02e6ef29-0dd2-4881-953e-2635b26dda38
+asb:
+  topic:
+    name: asb-demo-topic
+  subscription:
+    name: asb-demo-subscription
+server:
+  port: 8081
+app:
+    threadCnt: 10
+    clientPerThread: 1
+    enableSession: true
+    needSleep: false

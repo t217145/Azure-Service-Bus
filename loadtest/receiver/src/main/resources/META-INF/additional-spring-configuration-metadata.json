@@ -1,0 +1,32 @@
+{"properties": [
+  {
+    "name": "app.thread-cnt",
+    "type": "java.lang.String",
+    "description": "A description for 'app.thread-cnt'"
+  },
+  {
+    "name": "asb.topic.name",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.topic.name'"
+  },
+  {
+    "name": "app.clientPerThread",
+    "type": "java.lang.String",
+    "description": "A description for 'app.clientPerThread'"
+  },
+  {
+    "name": "app.enableSession",
+    "type": "java.lang.String",
+    "description": "A description for 'app.enableSession'"
+  },
+  {
+    "name": "asb.subscription.name",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.subscription.name'"
+  },
+  {
+    "name": "app.needSleep",
+    "type": "java.lang.String",
+    "description": "A description for 'app.needSleep'"
+  }
+]}
