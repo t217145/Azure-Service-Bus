@@ -4,10 +4,10 @@ spring:
       servicebus:
         namespace: mfc-asb-demo.servicebus.windows.net
         credential:
-          client-id: 50afeca7-27a9-4700-9161-764bb99f493b
-          client-secret: 8ml8Q~SDLQrHgq-UN3T-7lbIdM.8UaQlWu1WGcxG
+          client-id: {{client-id}}
+          client-secret: {{client-secret}}
         profile:
-          tenant-id: 02e6ef29-0dd2-4881-953e-2635b26dda38
+          tenant-id: {{tenant-id}}
 asb:
   topic:
     name: session-topic
