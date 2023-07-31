@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    azure:
+      servicebus:
+        namespace: {{asb-ns}}.servicebus.windows.net
+        credential:
+          client-id: {{client-id}}
+          client-secret: {{client-secret}}
+        profile:
+          tenant-id: {{tenant-id}}
+asb:
+  topic:
+    name: session-topic
+  subscription:
+    name: session-subscription
+server:
+  port: 0
+fixedDelay: 60000

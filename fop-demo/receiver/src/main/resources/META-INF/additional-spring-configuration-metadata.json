@@ -1,0 +1,37 @@
+{"properties": [
+  {
+    "name": "asb.topic.name",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.topic.name'"
+  },
+  {
+    "name": "asb.topic.subscription.name",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.topic.subscription.name'"
+  },
+  {
+    "name": "fop.processor.batchsize",
+    "type": "java.lang.String",
+    "description": "A description for 'fop.processor.batchsize'"
+  },
+  {
+    "name": "fop.processor.id",
+    "type": "java.lang.String",
+    "description": "A description for 'fop.processor.id'"
+  },
+  {
+    "name": "asb.topic.subscription.batch",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.topic.subscription.batch'"
+  },
+  {
+    "name": "asb.topic.subscription.sync",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.topic.subscription.sync'"
+  },
+  {
+    "name": "asb.topic.subscription.isSync",
+    "type": "java.lang.String",
+    "description": "A description for 'asb.topic.subscription.isSync'"
+  }
+]}

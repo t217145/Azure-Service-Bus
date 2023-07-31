@@ -1,0 +1,20 @@
+data "azurerm_servicebus_namespace" "mfcsbushkagentuatsea01" {
+  name                = "mfcsbushkagentuatsea01"
+  resource_group_name = "SEA-SG-agent-PreProd-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkclaimuatsea01" {
+  name                = "mfcsbushkclaimuatsea01"
+  resource_group_name = "SEA-SG-CLAIM-PreProd-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkcustuatsea01" {
+  name                = "mfcsbushkcustuatsea01"
+  resource_group_name = "SEA-SG-Custom-PreProd-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkpoluatsea01" {
+  name                = "mfcsbushkpoluatsea01"
+  resource_group_name = "SEA-SG-policy-PreProd-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkshareuatsea01" {
+  name                = "mfcsbushkshareuatsea01"
+  resource_group_name = "SEA-SG-shared-PreProd-01"
+}

@@ -1,0 +1,20 @@
+data "azurerm_servicebus_namespace" "mfcsbushkagentprdsea01" {
+  name                = "mfcsbushkagentprdsea01"
+  resource_group_name = "SEA-SG-policy-Prod-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkclaimprdsea01" {
+  name                = "mfcsbushkclaimprdsea01"
+  resource_group_name = "SEA-SG-policy-Prod-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkcustoprdsea01" {
+  name                = "mfcsbushkcustoprdsea01"
+  resource_group_name = "SEA-SG-policy-Prod-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkpolprdsea01" {
+  name                = "mfcsbushkpolprdsea01"
+  resource_group_name = "SEA-SG-policy-Prod-01"
+}
+data "azurerm_servicebus_namespace" "mfcsbushkshareprdsea01" {
+  name                = "mfcsbushkshareprdsea01"
+  resource_group_name = "SEA-SG-policy-Prod-01"
+}

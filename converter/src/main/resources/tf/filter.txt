@@ -1,0 +1,6 @@
+resource "azurerm_servicebus_subscription_rule" "%FILTERNAME%" {
+  name            = "%FILTERNAME%"
+  subscription_id = azurerm_servicebus_subscription.%SUBNAME%.id
+  filter_type     = "SqlFilter"
+  sql_filter      = "%FILTER%"
+}

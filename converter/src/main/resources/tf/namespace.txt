@@ -1,0 +1,4 @@
+data "azurerm_servicebus_namespace" "%NSNAME%" {
+  name                = "%NSNAME%"
+  resource_group_name = "%RGNAME%"
+}
