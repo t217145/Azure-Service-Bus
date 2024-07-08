@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: cloud-stream-retry
+  cloud:
+    azure:
+      servicebus:
+        namespace: ${asb.namespace}
+        credential:
+          client-id: ${cred.client.id}
+          client-secret: ${cred.client.secret}
+        profile:
+          tenant-id: ${cred.tenantId}
+    stream:
+      function:
+        definition: supply;
+      bindings:
+        supply-out-0:
+          destination: ${asb.topic}
+      servicebus:
+        retry-options:
+          max-delay: 20
+          delay: 20
+          max-retries: 10
+          try-timeout: 60
+        bindings:
+          supply-out-0:
+            producer:
+              entity-type: topic
+      poller:
+        fixed-delay: 1000
+        initial-delay: 0
+server:
+  port: 8088
